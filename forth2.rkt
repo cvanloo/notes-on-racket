@@ -4,12 +4,24 @@
 
 (define-syntax forth
   (syntax-rules ()
-    ((forth) empty)
-    ((forth x) (list x))
-    ((forth x y) (list x y))
-    ((forth x y z ...) (begin
-                         (error "todo")
-                         (forth z ...)))))
+    ((forth x ...) (forthify x ...))))
+
+(define (forthify . exprs)
+  (foldl
+   (λ (x acc)
+     (if (procedure? x)
+       (let* ((arity (procedure-arity x))
+              (n (cond
+                   ((number? arity) arity)
+                   ((procedure-arity? arity) 2)
+                   (else (error (format "procedure ~a has invalid arity ~a" x arity)))))
+              (res (apply (procedure-reduce-arity x n) (take acc n))))
+         (append
+          (if (list? res) res (list res))
+          (drop acc n)))
+       (cons x acc)))
+   empty
+   exprs))
 
 (define (dup top)
   (list top top))
