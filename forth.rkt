@@ -1,7 +1,6 @@
 #lang racket
 
-(provide forth dup swap over rot drop-)
-(provide /mod mod)
+(provide forth dup swap over rot drop- /mod mod)
 
 (define-syntax forth
   (syntax-rules ()
@@ -31,7 +30,7 @@
   (list b a))
 
 (define (over a b)
-  (list a b a))
+  (list b a b))
 
 (define (rot a b c)
   (list c a b))
